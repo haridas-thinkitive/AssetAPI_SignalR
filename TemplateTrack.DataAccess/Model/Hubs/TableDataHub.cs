@@ -15,7 +15,7 @@ namespace TemplateTrack.DataAccess.Model.Hubs
 
         public async Task DeleteRecord(int id)
         {
-            Debugger.Break();
+            //Debugger.Break();
             await Clients.All.SendAsync("ReceiveUpdate", id);
         }
 

@@ -26,5 +26,13 @@ namespace TemplateTrack.API.Controllers.Login
             return Ok(result);
         }
 
+        [HttpGet]
+        
+        public async Task<IActionResult> LoginUser(string userName, string password)
+        {
+            var result = await _assetLogin.LoginUser(userName, password);
+            return Ok(result);
+        }
+
     }
 }

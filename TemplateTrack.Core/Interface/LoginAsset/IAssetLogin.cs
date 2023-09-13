@@ -11,5 +11,8 @@ namespace TemplateTrack.Core.Interface.LoginAsset
     {
         Task<List<RegistrationModel>> LoginAsset(string userName, string password);
 
+        Task<string> LoginUser(string userName, string password);
+
+
     }
 }
