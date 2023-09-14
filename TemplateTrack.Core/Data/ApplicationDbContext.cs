@@ -12,6 +12,7 @@ using TemplateTrack.DataAccess.Model.AssetCheckOutRecord;
 using TemplateTrack.DataAccess.Model.AssetHistoryInfo;
 using TemplateTrack.DataAccess.Model.AssetManagement;
 using TemplateTrack.DataAccess.Model.BatchAsset;
+using TemplateTrack.DataAccess.Model.LoginAssetUser;
 using TemplateTrack.DataAccess.Model.NewFolder;
 using TemplateTrack.DataAccess.Model.Registration;
 using TemplateTrack.DataAccess.Model.TraceInfo;
@@ -50,6 +51,8 @@ namespace TemplateTrack.Core.Data
         public DbSet<AssetTrackingInfo> assetTrackingInfos { get; set; }
 
         public DbSet<AssetTraceIfo> assetTraceIfos { get; set; }
+
+        public DbSet<LoginModel> loginModels { get; set; }
 
     }
 }
