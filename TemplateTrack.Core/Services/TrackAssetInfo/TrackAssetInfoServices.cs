@@ -43,7 +43,7 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
             try
             {
                 result = await _context.assetTrackingInfos.ToListAsync();
-                await _hubContext.Clients.All.SendAsync("ReceiveTrackInfo", result);
+                await _hubContext.Clients.All.SendAsync("ReceiveTrackInfo");
 
 
             }
@@ -284,6 +284,37 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
                 throw ex;
             }
         }
+
+        public async Task<int> addAssetLocation( AssetTrackingInfo assetTrackingInfo)
+        {
+            try
+            {
+                var newAssetInfo = new AssetTrackingInfo
+                {
+                    Id = assetTrackingInfo.Id,
+                    TrackingId = assetTrackingInfo.TrackingId,
+                    Name = assetTrackingInfo.Name,
+                    Latitude = assetTrackingInfo.Latitude,
+                    Longitude = assetTrackingInfo.Longitude,
+                    Location = assetTrackingInfo.Location,
+                    IsCheckedIn = assetTrackingInfo.IsCheckedIn,
+                    IsCheckedOut = assetTrackingInfo.IsCheckedOut,
+                    BarCode = assetTrackingInfo.BarCode,
+                };
+
+                _context.assetTrackingInfos.Add(newAssetInfo);
+                await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("ReceiveTableData", assetTrackingInfo);
+
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }
 

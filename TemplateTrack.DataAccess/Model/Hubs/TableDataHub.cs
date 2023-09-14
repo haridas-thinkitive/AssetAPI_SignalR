@@ -15,10 +15,18 @@ namespace TemplateTrack.DataAccess.Model.Hubs
 
         public async Task DeleteRecord(int id)
         {
-            Debugger.Break();
             await Clients.All.SendAsync("ReceiveUpdate", id);
         }
 
+        public async Task Getdata()
+        {
+            await Clients.All.SendAsync("ReceiveTrackInfo");
+        }
+
+        public async Task InsertRecord(AssetTrackingInfo assetTrackingInfo)
+        {
+            await Clients.All.SendAsync("ReceiveTableData", assetTrackingInfo);
+        }
 
     }
 }
