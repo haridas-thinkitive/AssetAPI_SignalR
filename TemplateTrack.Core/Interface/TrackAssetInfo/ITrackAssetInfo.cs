@@ -23,6 +23,7 @@ namespace TemplateTrack.Core.Interface.TrackAssetInfo
         Task<AssetTraceIfo> GetAssetLocation(string barcode);
         Task<int> DeleteTrackInfo(int id);
 
+        Task<int> addAssetLocation(AssetTrackingInfo assetTrackingInfo);
 
     }
 }

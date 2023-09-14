@@ -41,6 +41,19 @@ namespace TemplateTrack.API.Controllers.TrackInfo
         }
 
 
+        [HttpPost]
+        public async Task<IActionResult> addAssetLocation([FromBody] AssetTrackingInfo assetTrackingInfo)
+        {
+            var result = await _trackAssetInfo.addAssetLocation(assetTrackingInfo);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Startrd Asset Tracking API
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
 
         [HttpGet]
         [Route("LongLati_Manually")]
