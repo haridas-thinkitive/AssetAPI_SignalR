@@ -84,12 +84,12 @@ namespace TemplateTrack.API.Controllers.TrackInfo
 
 
 
-        [HttpPost]
-        [Route("Post_Address")]
-        public async Task<ActionResult<AssetTrackingInfo>> PostAssetLocation(string barcode)
+        [HttpGet]
+        [Route("Find_Latest")]
+        public async Task<IActionResult> LatestLocation(string barcode)
         {
 
-            var location = await _trackAssetInfo.PostAssetLocation(barcode);
+            var location = await _trackAssetInfo.LatestLocation(barcode);
 
             if (location == null)
             {

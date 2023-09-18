@@ -51,5 +51,6 @@ namespace TemplateTrack.Core.Data
 
         public DbSet<AssetTraceIfo> assetTraceIfos { get; set; }
 
+        public DbSet<TrackingDetails> TrackingDetails { get; set; }
     }
 }
