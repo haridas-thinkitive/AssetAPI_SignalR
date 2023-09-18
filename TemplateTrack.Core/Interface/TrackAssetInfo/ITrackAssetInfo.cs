@@ -18,7 +18,7 @@ namespace TemplateTrack.Core.Interface.TrackAssetInfo
 
         Task<string> GetLocation(double latitude, double longitude);
 
-        Task<AssetTrackingInfo> PostAssetLocation(string barcode);
+        Task<string> LatestLocation(string barcode);
 
         Task<AssetTraceIfo> GetAssetLocation(string barcode);
         Task<int> DeleteTrackInfo(int id);

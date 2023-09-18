@@ -4,6 +4,7 @@ using GoogleMaps.LocationServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -119,11 +120,11 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
                     var jsonObject = JObject.Parse(jsonResponse);
 
                     string formattedAddress = jsonObject["display_name"]?.ToString(); //extract address
-
+                    TrackingDetails locationDetails = JsonConvert.DeserializeObject<TrackingDetails>(jsonObject.ToString());
                     string[] arr = formattedAddress.Split(",");
 
 
-                    return formattedAddress ?? "Location not found";
+                    return jsonObject.ToString() ?? "Location not found";
                 }
                 else
                 {
@@ -138,7 +139,7 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
             }
         }
 
-        public async Task<AssetTrackingInfo> PostAssetLocation(string barcode)
+        public async Task<string> LatestLocation(string barcode)
         {
             try
             {
@@ -176,6 +177,9 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
 
                             string formattedAddress = jsonObject["display_name"]?.ToString(); //extract address
 
+                           TrackingDetails locationDetails = JsonConvert.DeserializeObject<TrackingDetails>(jsonObject.ToString());
+
+
                             string[] arr = formattedAddress.Split(',');
 
                             //Added record from asset tracking info to assettraceinfo
@@ -189,7 +193,7 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
                                     Latitude = result.Latitude,
                                     Longitude = result.Longitude,
 
-
+                                
 
                                     landMark = "AB",
                                     District = arr[0],
@@ -201,7 +205,7 @@ namespace TemplateTrack.Core.Services.TrackAssetInfo
                                 };
                                 _context.assetTraceIfos.Add(res);
                                 _context.SaveChanges();
-                                return result;
+                                return res.ToString();
 
                             }
                             else
