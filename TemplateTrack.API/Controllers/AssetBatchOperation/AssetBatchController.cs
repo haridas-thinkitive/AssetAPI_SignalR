@@ -39,6 +39,14 @@ namespace TemplateTrack.API.Controllers.AssetBatchOperation
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("BatchSize")]
+        public async Task<IActionResult> BatchAsset([FromBody] List<AssetBatch> assetBatchs)
+        {
+            var result = await _batchAsset.BatchAsset(assetBatchs);
+            return Ok(result);
+        }
+
         [HttpPut]
         [Route("UpdateBatchInfo")]
         public async Task<IActionResult> UpdateAsseBatch([FromBody] List<AssetBatch> assetBatchs)

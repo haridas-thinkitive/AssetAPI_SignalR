@@ -15,5 +15,6 @@ namespace TemplateTrack.Core.Interface.BatchAssetOp
         Task<int> addAsseBatch(List<AssetBatch> assetInfos);
 
         Task<int> UpAsseBatch(List<AssetBatch> assetInfos);
+        Task<string> BatchAsset(List<AssetBatch> assetInfos);
     }
 }
