@@ -93,34 +93,344 @@ namespace TemplateTrack.Core.Services.BatchAssetS
             }
         }
 
+        //public async Task<string> BatchAsset(List<AssetBatch> _assetBatch)
+        //{
+        //    try
+        //    {
+        //       var ExistsRecord = await _context.assetBatches.FirstOrDefaultAsync();
+        //       if (ExistsRecord != null)
+        //       {
+        //            // int batchSize = _configuration.GetValue<int>("BatchSize");
+        //            if (_configuration.GetValue<int>("BatchSize") > 0 && _assetBatch.Count <= _configuration.GetValue<int>("BatchSize"))
+        //            {
+        //                var info = _context.assetBatches.OrderByDescending(x => x.BatchId).FirstOrDefault();
+
+        //                var tg = info.TagId + 1; //3
+        //                foreach (var ab in _assetBatch)
+        //                {
+        //                    ab.TagId = tg;
+        //                    ab.SerialNumber = info.SerialNumber;
+        //                    _context.assetBatches.Add(ab);
+        //                    await _context.SaveChangesAsync();
+        //                    tg++;
+        //                }
+        //                return "Record Added Successfully";
+        //            }
+        //            else
+        //            {
+        //                return "I am able to take only 50 records";
+        //            }
+        //       }
+        //       else
+        //        {
+        //            return "Set Barcode As manually";
+        //        }
+        //    }catch (Exception ex)
+        //    {
+        //        throw ex ;
+        //    }           
+        //}
+
         public async Task<string> BatchAsset(List<AssetBatch> _assetBatch)
         {
             try
             {
-               // int batchSize = _configuration.GetValue<int>("BatchSize");
-                if (_configuration.GetValue<int>("BatchSize") > 0 && _assetBatch.Count <= _configuration.GetValue<int>("BatchSize"))
-                {
-                    var info = _context.assetBatches.OrderByDescending(x => x.BatchId).FirstOrDefault();
+                int batchSize = _configuration.GetValue<int>("BatchSize");
 
-                    var tg = info.TagId + 1; //3
-                    foreach (var ab in _assetBatch)
+                if (batchSize <= 0)
+                {
+                    return "Batch size is not configured.";
+                }
+
+                if (_assetBatch == null || !_assetBatch.Any())
+                {
+                    return "No records to insert.";
+                }
+
+                // Calculate the number of batches required
+                int totalRecords = _assetBatch.Count;
+                int totalBatches = (totalRecords + batchSize - 1) / batchSize; //Calculate the batch division
+
+                for (int batchNumber = 0; batchNumber < totalBatches; batchNumber++)
+                {
+                    var batch = _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList();
+
+                    var info = _context.assetBatches.OrderByDescending(x => x.BatchId).FirstOrDefault();
+                    var tg = info != null ? info.TagId + 1 : 1; 
+
+                    foreach (var ab in batch)
                     {
                         ab.TagId = tg;
-                        ab.SerialNumber = info.SerialNumber;
+                        if (info?.SerialNumber != null)
+                        {
+                            ab.SerialNumber = info.SerialNumber;
+                        }
+                        else
+                        {
+                            ab.SerialNumber = 0;
+                        }
                         _context.assetBatches.Add(ab);
-                        await _context.SaveChangesAsync();
                         tg++;
                     }
-                    return "Record Added Successfully";
+                    await _context.SaveChangesAsync();
                 }
-                else
-                {
-                    return "I am able to take only 50 records";
-                }
-            }catch (Exception ex)
+                return "Records added successfully";
+            }
+            catch (Exception ex)
             {
-                throw ex ;
-            }           
+                throw ex;
+            }
         }
+
+        public async Task<string> AddBatch(List<BatchAssetInfo> _assetBatch)
+        {
+            try
+            {
+                int batchSize = _configuration.GetValue<int>("BatchSize");
+
+                if (batchSize <= 0)
+                {
+                    return "Batch size is not configured.";
+                }
+
+                if (_assetBatch == null || !_assetBatch.Any())
+                {
+                    return "No records to insert.";
+                }
+
+                int initialBatchType = 1; // Set the initial batch type
+                
+                int totalRecords = _assetBatch.Count; // Calculate the number of batches required
+                int totalBatches = (totalRecords + batchSize - 1) / batchSize; //Calculate the batch division
+
+                for (int batchNumber = 0; batchNumber < totalBatches; batchNumber++)
+                {
+                    var batch = _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList();
+
+                    var info = _context.batchAssetInfos.OrderByDescending(x => x.BatchId).FirstOrDefault();
+                    var tg = info != null ? info.TagId + 1 : 1;
+
+                    foreach (var ab in batch)
+                    {
+                        ab.TagId = tg;
+                        if (info?.SerialNumber != null)
+                        {
+                            ab.SerialNumber = info.SerialNumber;
+                        }
+                        else
+                        {
+                            ab.SerialNumber = 0;
+                        }
+                        ab.BatchType = initialBatchType.ToString(); // Set the batch type as a string
+                        _context.batchAssetInfos.Add(ab);
+                        tg++;
+                    }
+                    await _context.SaveChangesAsync();
+                    initialBatchType++;
+
+                }
+                return "Records added successfully";
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Step 1 Without parallel Its Working 
+        /// </summary>
+        /// <param name="_assetBatch"></param>
+        /// <returns></returns>
+        //public async Task<string> AddBatchparallel(List<BatchAssetInfo> _assetBatch)
+        //{
+        //    try
+        //    {
+        //        int batchSize = _configuration.GetValue<int>("BatchSize");
+
+        //        if (batchSize <= 0)
+        //        {
+        //            return "Batch size is not configured.";
+        //        }
+
+        //        if (_assetBatch == null || !_assetBatch.Any())
+        //        {
+        //            return "No records to insert.";
+        //        }
+
+        //        int initialBatchType = 1; // Set the initial batch type
+
+        //        int totalRecords = _assetBatch.Count; // Calculate the number of batches required
+        //        int totalBatches = (totalRecords + batchSize - 1) / batchSize; //Calculate the batch division
+
+        //        for (int batchNumber = 0; batchNumber < totalBatches; batchNumber++)
+        //        {
+        //            var batch = _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList();
+
+        //            var info = _context.batchAssetInfos.OrderByDescending(x => x.BatchId).FirstOrDefault();
+        //            var tg = info != null ? info.TagId + 1 : 1;
+
+        //            foreach (var ab in batch)
+        //            {
+        //                ab.TagId = tg;
+        //                if (info?.SerialNumber != null)
+        //                {
+        //                    ab.SerialNumber = info.SerialNumber;
+        //                }
+        //                else
+        //                {
+        //                    ab.SerialNumber = 0;
+        //                }
+        //                ab.BatchType = initialBatchType.ToString(); // Set the batch type as a string
+        //                _context.batchAssetInfos.Add(ab);
+        //                tg++;
+        //            }
+        //            await _context.SaveChangesAsync();
+        //            initialBatchType++;
+
+        //        }
+        //        return "Records added successfully";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+
+        //public async Task<string> AddBatchparallel(List<BatchAssetInfo> _assetBatch)
+        //{
+        //    try
+        //    {
+        //        int batchSize = _configuration.GetValue<int>("BatchSize");
+
+        //        if (batchSize <= 0)
+        //        {
+        //            return "Batch size is not configured.";
+        //        }
+
+        //        if (_assetBatch == null || !_assetBatch.Any())
+        //        {
+        //            return "No records to insert.";
+        //        }
+
+        //        int initialBatchType = 1; // Set the initial batch type
+
+        //        int totalRecords = _assetBatch.Count; // Calculate the number of batches required
+        //        int totalBatches = (totalRecords + batchSize - 1) / batchSize; // Calculate the batch division
+
+        //        await Task.Run(async () =>
+        //        {
+        //            for (int batchNumber = 0; batchNumber < totalBatches; batchNumber++)
+        //            {
+        //                var batch = _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList();
+
+        //                var info = _context.batchAssetInfos.OrderByDescending(x => x.BatchId).FirstOrDefault();
+        //                var tg = info != null ? info.TagId + 1 : 1;
+
+        //                foreach (var ab in batch)
+        //                {
+        //                    ab.TagId = tg;
+        //                    if (info?.SerialNumber != null)
+        //                    {
+        //                        ab.SerialNumber = info.SerialNumber;
+        //                    }
+        //                    else
+        //                    {
+        //                        ab.SerialNumber = 0;
+        //                    }
+        //                    ab.BatchType = initialBatchType.ToString(); // Set the batch type as a string
+        //                    _context.batchAssetInfos.Add(ab);
+        //                    tg++;
+        //                }
+        //                await _context.SaveChangesAsync();
+        //                initialBatchType++;
+        //            }
+        //        });
+
+        //        return "Records added successfully"; // Return a value outside the Task.Run
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        public async Task<string> AddBatchparallel(List<BatchAssetInfo> _assetBatch)
+        {
+            try
+            {
+                int batchSize = _configuration.GetValue<int>("BatchSize");
+
+                if (batchSize <= 0)
+                {
+                    return "Batch size is not configured.";
+                }
+
+                if (_assetBatch == null || !_assetBatch.Any())
+                {
+                    return "No records to insert.";
+                }
+
+                int initialBatchType = 1;
+
+                int totalRecords = _assetBatch.Count; // Calculate the number of batches required
+
+                int totalBatches = (totalRecords + batchSize - 1) / batchSize; // Calculate the batch division
+
+                var batchProgress = new List<int>(); // Store the progress of each batch task
+
+                await Task.Run(async () =>
+                {
+                    for (int batchNumber = 0; batchNumber < totalBatches; batchNumber++)
+                    {
+                        var batch = _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList();
+
+                        var info = _context.batchAssetInfos.OrderByDescending(x => x.BatchId).FirstOrDefault();
+                        var tg = info != null ? info.TagId + 1 : 1;
+
+                        foreach (var ab in batch)
+                        {
+                            ab.TagId = tg;
+                            if (info?.SerialNumber != null)
+                            {
+                                ab.SerialNumber = info.SerialNumber;
+                            }
+                            else
+                            {
+                                ab.SerialNumber = 0;
+                            }
+                            ab.BatchType = initialBatchType.ToString(); // Set the batch type as a string
+                            _context.batchAssetInfos.Add(ab);
+                            tg++;
+                        }
+
+                        // Log the batch number before starting to save
+                        int currentBatchNumber = batchNumber;
+                        batchProgress.Add(currentBatchNumber);
+                        await _context.SaveChangesAsync();
+                        batchProgress.Remove(currentBatchNumber);
+                        initialBatchType++;
+                    }
+                });
+
+                // Check if all batch tasks have completed
+                while (batchProgress.Count > 0)
+                {
+                    // Continue waiting until all batch tasks are completed
+                    await Task.Delay(1000000000); // Wait for a short interval before checking again
+                }
+
+                return "Records added successfully"; // Return a value outside the Task.Run
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
+
+
+
 }

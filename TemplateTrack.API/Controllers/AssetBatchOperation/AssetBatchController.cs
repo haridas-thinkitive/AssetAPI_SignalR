@@ -39,6 +39,12 @@ namespace TemplateTrack.API.Controllers.AssetBatchOperation
             return Ok(result);
         }
 
+        /// <summary>
+        /// This Endpoint for add Asset Record in Batch if table is empty then need to set barcode manually
+        /// </summary>
+        /// <param name="assetBatchs"></param>
+        /// <returns></returns>
+       
         [HttpPost]
         [Route("BatchSize")]
         public async Task<IActionResult> BatchAsset([FromBody] List<AssetBatch> assetBatchs)
@@ -52,6 +58,33 @@ namespace TemplateTrack.API.Controllers.AssetBatchOperation
         public async Task<IActionResult> UpdateAsseBatch([FromBody] List<AssetBatch> assetBatchs)
         {
             var result = await _batchAsset.UpAsseBatch(assetBatchs);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Stored batch(Record divided Into Batches)in database normally
+        /// </summary>
+        /// <param name="assetBatchs"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("AddBatch")]
+        public async Task<IActionResult> AddBatch([FromBody] List<BatchAssetInfo> batchAsset)
+        {
+            var result = await _batchAsset.AddBatch(batchAsset);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Add Data in batch using Multithreading
+        /// </summary>
+        /// <param name="batchAsset"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("AddBatchparallel")]
+        public async Task<IActionResult> AddBatchparallel([FromBody] List<BatchAssetInfo> batchAsset)
+        {
+            var result = await _batchAsset.AddBatchparallel(batchAsset);
             return Ok(result);
         }
 
