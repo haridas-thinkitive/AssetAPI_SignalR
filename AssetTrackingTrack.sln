@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateTrack.Core", "Templ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateTrack.DataAccess", "TemplateTrack.DataAccess\TemplateTrack.DataAccess.csproj", "{6EE6C7C9-C3B7-429E-8EFA-CE607CD36236}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplateTrack.Test", "TemplateTrack.Test\TemplateTrack.Test.csproj", "{2D86D6B4-8CED-4410-AE62-F765CD2ABA31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6EE6C7C9-C3B7-429E-8EFA-CE607CD36236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EE6C7C9-C3B7-429E-8EFA-CE607CD36236}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EE6C7C9-C3B7-429E-8EFA-CE607CD36236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D86D6B4-8CED-4410-AE62-F765CD2ABA31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D86D6B4-8CED-4410-AE62-F765CD2ABA31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D86D6B4-8CED-4410-AE62-F765CD2ABA31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D86D6B4-8CED-4410-AE62-F765CD2ABA31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -187,26 +187,18 @@ namespace TemplateTrack.Core.Services.BatchAssetS
             try
             {
                 int batchSize = _configuration.GetValue<int>("BatchSize");
-
-                if (batchSize <= 0)
+                if (batchSize <= 0 || _assetBatch == null || !_assetBatch.Any())
                 {
-                    return "Batch size is not configured.";
+                    if (batchSize <= 0)
+                        return "Batch size is not configured.";
+                    else
+                        return "No records to insert.";
                 }
-
-                if (_assetBatch == null || !_assetBatch.Any())
-                {
-                    return "No records to insert.";
-                }
-
-                int initialBatchType = 1; // Set the initial batch type
-                
-                int totalRecords = _assetBatch.Count; // Calculate the number of batches required
-                int totalBatches = (totalRecords + batchSize - 1) / batchSize; //Calculate the batch division
-
-                for (int batchNumber = 0; batchNumber < totalBatches; batchNumber++)
+                int initialBatchType = 1;         
+                int totalRecords = _assetBatch.Count; 
+                for (int batchNumber = 0; batchNumber < (totalRecords + batchSize - 1) / batchSize; batchNumber++)
                 {
                     var batch = _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList();
-
                     var info = _context.batchAssetInfos.OrderByDescending(x => x.BatchId).FirstOrDefault();
                     var tg = info != null ? info.TagId + 1 : 1;
 
@@ -227,7 +219,6 @@ namespace TemplateTrack.Core.Services.BatchAssetS
                     }
                     await _context.SaveChangesAsync();
                     initialBatchType++;
-
                 }
                 return "Records added successfully";
             }
@@ -418,7 +409,7 @@ namespace TemplateTrack.Core.Services.BatchAssetS
                 while (batchProgress.Count > 0)
                 {
                     // Continue waiting until all batch tasks are completed
-                    await Task.Delay(1000000000); // Wait for a short interval before checking again
+                    await Task.Delay(1000); // Wait for a short interval before checking again
                 }
 
                 return "Records added successfully"; // Return a value outside the Task.Run
