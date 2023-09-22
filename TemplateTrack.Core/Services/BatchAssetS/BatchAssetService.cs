@@ -420,6 +420,21 @@ namespace TemplateTrack.Core.Services.BatchAssetS
             }
         }
 
+        public async Task<List<BatchAssetInfo>> GetBatchparallel()
+        {
+            List<BatchAssetInfo> result = null;
+            try
+            {
+                result = await _context.batchAssetInfos.ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+
+        }
     }
 
 
