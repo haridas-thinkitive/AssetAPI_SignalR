@@ -9,7 +9,7 @@ using TemplateTrack.DataAccess.Model.NewFolder;
 
 namespace TemplateTrack.API.Controllers.AssetBatchOperation
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AssetBatchController : ControllerBase
@@ -85,6 +85,15 @@ namespace TemplateTrack.API.Controllers.AssetBatchOperation
         public async Task<IActionResult> AddBatchparallel([FromBody] List<BatchAssetInfo> batchAsset)
         {
             var result = await _batchAsset.AddBatchparallel(batchAsset);
+            return Ok(result);
+        }
+
+
+        [HttpGet]
+        [Route("GetBatchparallel")]
+        public async Task<ActionResult<List<BatchAssetInfo>>> GetBatchparallel()
+        {
+            var result = await _batchAsset.GetBatchparallel();
             return Ok(result);
         }
 
