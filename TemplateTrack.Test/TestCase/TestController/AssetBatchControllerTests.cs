@@ -37,10 +37,9 @@ namespace TemplateTrack.Test.TestCase.TestController
             var assetBatchList = new List<AssetBatch>
             {
             new AssetBatch { BatchId = 1,AssetName="HD",BatchName="1",SerialNumber=1,TagId=1},
-            new AssetBatch { BatchId = 1,AssetName="HD",BatchName="1",SerialNumber=1,TagId=0}
+            new AssetBatch { BatchId = 1,AssetName="HD",BatchName="1",SerialNumber=1,TagId=5}
 
             };
-
 
             // Mock your IBatchAsset service
             var mockBatchAssetService = new Mock<IBatchAsset>();
@@ -55,7 +54,7 @@ namespace TemplateTrack.Test.TestCase.TestController
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<OkObjectResult>(result); // Check if it's an OkObjectResult
+            Assert.IsType<OkObjectResult>(result); 
 
             var okResult = result as OkObjectResult;
             var returnValue = okResult.Value;
@@ -63,8 +62,60 @@ namespace TemplateTrack.Test.TestCase.TestController
             // Assert that the return value matches the count of added AssetBatch objects
             Assert.Equal(assetBatchList.Count, returnValue);
         }
+
+        [Fact]
+        public async Task AddAssetBatchSize_ReturnsOkResult()
+        {
+            // Arrange
+            var assetBatchList = new List<AssetBatch>
+            {
+            new AssetBatch {AssetName="HD",BatchName="1",SerialNumber=1,TagId=0},
+            new AssetBatch {AssetName="HD",BatchName="1",SerialNumber=1,TagId=0}
+
+            };
+
+            // Mock your IBatchAsset service
+            var mockBatchAssetService = new Mock<IBatchAsset>();
+            mockBatchAssetService.Setup(service => service.BatchAsset(assetBatchList))
+                                 .ReturnsAsync("SomeStringResult");
+
+            // Create an instance of AssetBatchController and inject the mock service
+            var controller = new AssetBatchController(null, mockBatchAssetService.Object);
+
+            // Act
+            var result = await controller.BatchAsset(assetBatchList);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Check_Tagid_0()
+        {
+            // Arrange
+            var assetBatchList = new List<AssetBatch>
+            {
+            new AssetBatch {AssetName="HD",BatchName="1",SerialNumber=1,TagId=0},
+            new AssetBatch {AssetName="HD",BatchName="1",SerialNumber=1,TagId=0}
+
+            };
+
+            // Mock your IBatchAsset service
+            var mockBatchAssetService = new Mock<IBatchAsset>();
+            mockBatchAssetService.Setup(service => service.BatchAsset(assetBatchList))
+                                 .ReturnsAsync("SomeStringResult");
+
+            // Create an instance of AssetBatchController and inject the mock service
+            var controller = new AssetBatchController(null, mockBatchAssetService.Object);
+
+            // Act
+            var result = await controller.BatchAsset(assetBatchList);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<OkObjectResult>(result);
+        }
+
     }
-
-
-    
 }
