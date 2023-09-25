@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using TemplateTrack.Core.Data;
 using TemplateTrack.Core.Interface.BatchAssetOp;
 using TemplateTrack.DataAccess.Model.BatchAsset;
+using TemplateTrack.DataAccess.Model.Hubs;
 using TemplateTrack.DataAccess.Model.NewFolder;
 
 namespace TemplateTrack.Core.Services.BatchAssetS
@@ -16,11 +18,13 @@ namespace TemplateTrack.Core.Services.BatchAssetS
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IHubContext<TableDataHub> _hubContext;
 
-        public BatchAssetService(ApplicationDbContext context, IConfiguration configuration)
+        public BatchAssetService(ApplicationDbContext context, IConfiguration configuration, IHubContext<TableDataHub> hubContext)
         {
             _context = context;
             _configuration = configuration;
+            _hubContext = hubContext;
         }
 
 
@@ -401,6 +405,7 @@ namespace TemplateTrack.Core.Services.BatchAssetS
                         batchProgress.Add(currentBatchNumber);
                         await _context.SaveChangesAsync();
                         batchProgress.Remove(currentBatchNumber);
+                        await _hubContext.Clients.All.SendAsync("ReceiveBatchProgress", currentBatchNumber);
                         initialBatchType++;
                     }
                 });
@@ -420,12 +425,67 @@ namespace TemplateTrack.Core.Services.BatchAssetS
             }
         }
 
+        public async Task<string> AddBatchparallel_BatchCode(List<BatchAssetInfo> _assetBatch, string Batch_Code)
+        {
+            try
+            {
+                if(!string.IsNullOrEmpty(Batch_Code))
+                {
+                    int batchSize = _configuration.GetValue<int>("BatchSize");
+
+                    if (batchSize <= 0 || (_assetBatch == null || !_assetBatch.Any()))
+                    {
+                        return batchSize <= 0 ? "Batch size is not configured." : "No records to insert.";
+                    }
+                    var batchProgress = new List<int>();
+                    await Task.Run(async () =>
+                    {
+                        for (int batchNumber = 0; batchNumber < (_assetBatch.Count + batchSize - 1) / batchSize; batchNumber++)
+                        {
+                            var info = _context.batchAssetInfos.OrderByDescending(x => x.BatchId).FirstOrDefault();
+                            var tg = info != null ? info.TagId + 1 : 1;
+
+                            foreach (var ab in _assetBatch.Skip(batchNumber * batchSize).Take(batchSize).ToList())
+                            {
+                                ab.TagId = tg;
+                                if (info?.SerialNumber != null)
+                                {
+                                    ab.SerialNumber = info.SerialNumber;
+                                }
+                                else
+                                {
+                                    ab.SerialNumber = 0;
+                                }
+                                ab.BatchType = Batch_Code;
+                                _context.batchAssetInfos.Add(ab);
+                                tg++;
+                            }
+                            batchProgress.Add(batchNumber);
+                            await _context.SaveChangesAsync();
+                            batchProgress.Remove(batchNumber);
+                        }
+                    });
+                    return "Records added successfully";
+                }
+                else
+                {
+                    return "Batch_Code is requried and not null";
+                }
+            
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<List<BatchAssetInfo>> GetBatchparallel()
         {
             List<BatchAssetInfo> result = null;
             try
             {
                 result = await _context.batchAssetInfos.ToListAsync();
+                await _hubContext.Clients.All.SendAsync("ReceiveGetAllBatchUpdate");
 
             }
             catch (Exception ex)

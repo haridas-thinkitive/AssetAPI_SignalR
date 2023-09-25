@@ -97,5 +97,12 @@ namespace TemplateTrack.API.Controllers.AssetBatchOperation
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("AddBatchparallel_BatchCode/{Batch_Code}")]
+        public async Task<IActionResult> AddBatchparallel_BatchCode([FromBody] List<BatchAssetInfo> batchAsset, string Batch_Code)
+        {
+            var result = await _batchAsset.AddBatchparallel_BatchCode(batchAsset,Batch_Code);
+            return Ok(result);
+        }
     }
 }

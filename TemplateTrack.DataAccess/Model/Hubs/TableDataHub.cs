@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TemplateTrack.DataAccess.Model.BatchAsset;
 using TemplateTrack.DataAccess.Model.NewFolder;
 using TemplateTrack.DataAccess.Model.TrackingInfo;
 
@@ -26,6 +27,40 @@ namespace TemplateTrack.DataAccess.Model.Hubs
         public async Task InsertRecord(AssetTrackingInfo assetTrackingInfo)
         {
             await Clients.All.SendAsync("ReceiveTableData", assetTrackingInfo);
+        }
+        /// <summary>
+        /// SignalR for assetbatch Controller
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// 
+        public async Task SendGetAllBatchUpdate()
+        {
+            await Clients.All.SendAsync("ReceiveGetAllBatchUpdate");
+        }
+
+        public async Task SendUpdateForSubmit(List<BatchAssetInfo> data)
+        {
+            // Handle the data and send updates to connected clients
+            await Clients.All.SendAsync("ReceiveUpdateForSubmit", data);
+        }
+
+        public async Task SendUpdateForSave(List<BatchAssetInfo> data)
+        {
+            // Handle the data and send updates to connected clients
+            await Clients.All.SendAsync("ReceiveUpdateForSave", data);
+        }
+
+        public async Task SendUpdateForSaveWithBatchCode(List<BatchAssetInfo> data)
+        {
+            // Handle the data and send updates to connected clients
+            await Clients.All.SendAsync("ReceiveUpdateForSaveWithBatchCode", data);
+        }
+
+        public async Task SendUpdateForAddBatch(List<BatchAssetInfo> data)
+        {
+            // Handle the data and send updates to connected clients
+            await Clients.All.SendAsync("ReceiveUpdateForAddBatch", data);
         }
 
     }
