@@ -88,5 +88,14 @@ namespace TemplateTrack.API.Controllers.AssetBatchOperation
             return Ok(result);
         }
 
+
+        [HttpGet]
+        [Route("GetBatchparallel")]
+        public async Task<ActionResult<List<BatchAssetInfo>>> GetBatchparallel()
+        {
+            var result = await _batchAsset.GetBatchparallel();
+            return Ok(result);
+        }
+
     }
 }
