@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TemplateTrack.Core.Data;
 
@@ -11,9 +12,11 @@ using TemplateTrack.Core.Data;
 namespace TemplateTrack.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230927122458_H3")]
+    partial class H3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,14 +54,14 @@ namespace TemplateTrack.Core.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5ccece0b-5557-47da-be6e-990ae1049b00",
+                            Id = "26a60970-5a1f-4e00-b984-3b2aac3bd1e5",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "31daca02-8f14-459f-9e22-6d3e01072de5",
+                            Id = "8bab3e95-c3b9-4d8b-a7d7-1ea32793ba4e",
                             ConcurrencyStamp = "2",
                             Name = "Developer",
                             NormalizedName = "Developer"

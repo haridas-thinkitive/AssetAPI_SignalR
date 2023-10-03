@@ -41,25 +41,21 @@ namespace TemplateTrack.DataAccess.Model.Hubs
 
         public async Task SendUpdateForSubmit(List<BatchAssetInfo> data)
         {
-            // Handle the data and send updates to connected clients
             await Clients.All.SendAsync("ReceiveUpdateForSubmit", data);
         }
 
         public async Task SendUpdateForSave(List<BatchAssetInfo> data)
         {
-            // Handle the data and send updates to connected clients
             await Clients.All.SendAsync("ReceiveUpdateForSave", data);
         }
 
         public async Task SendUpdateForSaveWithBatchCode(List<BatchAssetInfo> data)
         {
-            // Handle the data and send updates to connected clients
             await Clients.All.SendAsync("ReceiveUpdateForSaveWithBatchCode", data);
         }
 
         public async Task SendUpdateForAddBatch(List<BatchAssetInfo> data)
         {
-            // Handle the data and send updates to connected clients
             await Clients.All.SendAsync("ReceiveUpdateForAddBatch", data);
         }
 

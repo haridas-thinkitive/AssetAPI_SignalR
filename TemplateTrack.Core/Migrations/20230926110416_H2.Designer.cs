@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TemplateTrack.Core.Data;
 
@@ -11,9 +12,11 @@ using TemplateTrack.Core.Data;
 namespace TemplateTrack.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230926110416_H2")]
+    partial class H2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,17 +54,24 @@ namespace TemplateTrack.Core.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5ccece0b-5557-47da-be6e-990ae1049b00",
+                            Id = "b9836036-100b-45f9-9cc1-6d8b74cd8ef6",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "31daca02-8f14-459f-9e22-6d3e01072de5",
+                            Id = "7861d501-78c0-4182-bab8-fee28727daa5",
                             ConcurrencyStamp = "2",
                             Name = "Developer",
                             NormalizedName = "Developer"
+                        },
+                        new
+                        {
+                            Id = "6733eb5d-f5f2-4ce5-a7a2-e427359c6f67",
+                            ConcurrencyStamp = "3",
+                            Name = "Manager",
+                            NormalizedName = "Manager"
                         });
                 });
 
