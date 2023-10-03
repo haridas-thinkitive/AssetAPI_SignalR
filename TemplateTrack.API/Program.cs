@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -9,6 +10,7 @@ using TemplateTrack.Core.Interface.BatchAssetOp;
 using TemplateTrack.Core.Interface.CheckInAsset;
 using TemplateTrack.Core.Interface.IAssetAll;
 using TemplateTrack.Core.Interface.LoginAsset;
+using TemplateTrack.Core.Interface.Register;
 using TemplateTrack.Core.Interface.TrackAssetInfo;
 using TemplateTrack.Core.Services;
 using TemplateTrack.Core.Services.AssetOperationService;
@@ -16,6 +18,7 @@ using TemplateTrack.Core.Services.AssetService;
 using TemplateTrack.Core.Services.BatchAssetS;
 using TemplateTrack.Core.Services.CheckInService;
 using TemplateTrack.Core.Services.LoginService;
+using TemplateTrack.Core.Services.RegistrationService;
 using TemplateTrack.Core.Services.TrackAssetInfo;
 using TemplateTrack.DataAccess.Model.Hubs;
 
@@ -38,6 +41,8 @@ builder.Services.AddScoped<IAssetOperation, AssetOperationServices>();
 builder.Services.AddScoped<IBatchAsset, BatchAssetService>();
 builder.Services.AddScoped<IcheckInAsset, CheckInAssetService>();
 builder.Services.AddScoped<ITrackAssetInfo, TrackAssetInfoServices>();
+builder.Services.AddScoped<IRegister, UserRegistrationService>();
+
 
 
 
@@ -60,6 +65,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+//for identity
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
