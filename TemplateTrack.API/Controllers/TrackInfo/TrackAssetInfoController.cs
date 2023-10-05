@@ -12,6 +12,7 @@ using TemplateTrack.DataAccess.Model.TrackingInfo;
 
 namespace TemplateTrack.API.Controllers.TrackInfo
 {
+    [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class TrackAssetInfoController : ControllerBase
@@ -26,7 +27,7 @@ namespace TemplateTrack.API.Controllers.TrackInfo
 
         }
 
-        [HttpGet]
+       [HttpGet]
         public async Task<ActionResult<List<AssetTrackingInfo>>> GetAllTrackInfo()
         {
             var result = await _trackAssetInfo.GetAllTrackInfo();

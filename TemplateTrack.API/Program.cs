@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using TemplateTrack.Core.Data;
 using TemplateTrack.Core.Interface.AssetAlluser;
@@ -24,16 +25,38 @@ using TemplateTrack.DataAccess.Model.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Connection String
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+// Identity Configuration
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
-builder.Services.AddSignalR();
+// JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+// HTTP Client
 builder.Services.AddHttpClient();
 
-builder.Services.AddSwaggerGen();
+// Scoped Services
 builder.Services.AddScoped<IAllAssetUserService, AllAssetUserService>();
 builder.Services.AddScoped<IAssetLogin, AssetLoginServices>();
 builder.Services.AddScoped<IAllAsset, AllAssetService>();
@@ -43,33 +66,40 @@ builder.Services.AddScoped<IcheckInAsset, CheckInAssetService>();
 builder.Services.AddScoped<ITrackAssetInfo, TrackAssetInfoServices>();
 builder.Services.AddScoped<IRegister, UserRegistrationService>();
 
+// Controllers
+builder.Services.AddControllers();
+builder.Services.AddAuthorization();
 
-
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF32.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
-builder.Services.AddDbContext<ApplicationDbContext>(option =>
+// Swagger Configuration
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
+builder.Services.AddSwaggerGen(c =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Enter The Valid Token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
 });
-
-//for identity
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
@@ -81,24 +111,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(options => options
-
-
-.WithOrigins("http://localhost:4200", "http://localhost:51131")
-.AllowAnyMethod()
-.AllowCredentials()
-.AllowAnyHeader()
-
-);
+    .WithOrigins("http://localhost:4200", "http://localhost:51131")
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .AllowAnyHeader()
+    
+    );
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.MapHub<TableDataHub>("/TableDataHub");
-
 
 app.Run();

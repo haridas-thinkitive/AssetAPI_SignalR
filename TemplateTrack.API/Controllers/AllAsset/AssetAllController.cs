@@ -9,7 +9,7 @@ using TemplateTrack.DataAccess.Model.Registration;
 
 namespace TemplateTrack.API.Controllers.AllAsset
 {
-    [Authorize]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AssetAllController : ControllerBase
@@ -24,7 +24,7 @@ namespace TemplateTrack.API.Controllers.AllAsset
             _context = context;
         }
 
-
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet]
         [Route("api/assets")]
         public async Task<ActionResult<List<Asset>>> GetAllAssets()
